@@ -92,7 +92,7 @@ void AS1Player::Tick(float DeltaSeconds)
 			AddMovementInput(GetActorForwardVector());
 
 			
-			if (80.f <= (Location - DestLocation).Length() || TooFar)
+			if (90.f <= (Location - DestLocation).Length() || TooFar)
 			{
 				TooFar = true;
 				
