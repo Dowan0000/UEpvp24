@@ -97,6 +97,13 @@ void AS1MyPlayer::Tick(float DeltaTime)
 
 		// 현재 위치 정보
 		{
+			{
+				FVector Location = GetActorLocation();
+				PlayerInfo->set_x(Location.X);
+				PlayerInfo->set_y(Location.Y);
+				PlayerInfo->set_z(Location.Z);
+			}
+
 			Protocol::PosInfo* Info = MovePkt.mutable_info();
 			Info->CopyFrom(*PlayerInfo);
 			Info->set_yaw(DesiredYaw);

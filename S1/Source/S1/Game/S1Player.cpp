@@ -68,26 +68,18 @@ void AS1Player::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	{
+	/*{
 		FVector Location = GetActorLocation();
 		PlayerInfo->set_x(Location.X);
 		PlayerInfo->set_y(Location.Y);
 		PlayerInfo->set_z(Location.Z);
 		PlayerInfo->set_yaw(GetControlRotation().Yaw);
-	}
+	}*/
 
 	if (IsMyPlayer() == false)
 	{
 		FVector Location = GetActorLocation();
 		FVector DestLocation = FVector(DestInfo->x(), DestInfo->y(), DestInfo->z());
-
-		FVector MoveDir = (DestLocation - Location);
-		const float DistToDest = MoveDir.Length();
-		MoveDir.Normalize();
-
-		float MoveDist = (MoveDir * 500.f * DeltaSeconds).Length();
-		MoveDist = FMath::Min(MoveDist, DistToDest);
-		FVector NextLocation = Location + MoveDir * MoveDist;
 
 		//SetActorLocation(NextLocation);
 
@@ -99,17 +91,27 @@ void AS1Player::Tick(float DeltaSeconds)
 
 			AddMovementInput(GetActorForwardVector());
 
-			/*if (50.f <= (Location - DestLocation).Length())
-				SetActorLocation(NextLocation);*/
-			if (100.f <= (Location - DestLocation).Length() || TooFar)
+			
+			if (80.f <= (Location - DestLocation).Length() || TooFar)
 			{
 				TooFar = true;
+				
+				FVector MoveDir = (DestLocation - Location);
+				const float DistToDest = MoveDir.Length();
+				MoveDir.Normalize();
+
+				float MoveDist = (MoveDir * 500.f * DeltaSeconds).Length();
+				MoveDist = FMath::Min(MoveDist, DistToDest);
+				FVector NextLocation = Location + MoveDir * MoveDist;
+
 				SetActorLocation(NextLocation);
+				
 				//UE_LOG(LogTemp, Warning, TEXT("TooFar"));
 			}
 			if ((Location - DestLocation).Length() <= 10.f)
 			{
 				TooFar = false;
+				
 				//UE_LOG(LogTemp, Warning, TEXT("Dist under 10.f"));
 			}
 
