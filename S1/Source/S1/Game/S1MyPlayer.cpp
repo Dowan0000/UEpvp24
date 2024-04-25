@@ -12,8 +12,10 @@
 #include "EnhancedInputSubsystems.h"
 #include "S1.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Engine/DamageEvents.h"
 
-AS1MyPlayer::AS1MyPlayer()
+AS1MyPlayer::AS1MyPlayer() : 
+	bIsAttacking(false)
 {
 	// Create a camera boom (pulls in towards the player if there is a collision)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
@@ -64,6 +66,8 @@ void AS1MyPlayer::SetupPlayerInputComponent(class UInputComponent* PlayerInputCo
 		//Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AS1MyPlayer::Look);
 
+		//Attacking
+		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Started, this, &AS1MyPlayer::Attack);
 	}
 
 }
@@ -168,6 +172,51 @@ void AS1MyPlayer::Look(const FInputActionValue& Value)
 	}
 }
 
+void AS1MyPlayer::Attack()
+{
+	if (bIsAttacking)
+		return;
 
+	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, FString::Printf(TEXT(" Attack ")));
+	//bIsAttacking = true;
 
+	AttackAnim();
 
+	FHitResult Hit;
+
+	FVector Start = { GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + 70.f };
+	FVector End = Start + GetActorForwardVector() * 200.f;
+
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
+	Params.AddIgnoredActor(GetOwner());
+
+	GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECollisionChannel::ECC_Camera, Params);
+	AS1Player* Victim = Cast<AS1Player>(Hit.GetActor());
+	bool hit = Victim != nullptr;
+
+	Protocol::C_ATTACK AttackPkt;
+	Protocol::ObjectInfo* AttackerInfo = AttackPkt.mutable_attacker();
+	AttackerInfo->CopyFrom(*ObjectInfo);
+	AttackPkt.set_hit(hit);
+
+	if (hit)
+	{
+		//FDamageEvent DamageEvent;
+		//Victim->TakeDamage(Damage, DamageEvent, GetController(), this);
+
+		{
+			// Å¸°Ù, µ¥¹ÌÁö...
+
+			Protocol::ObjectInfo* VictimInfo = AttackPkt.mutable_victim();
+			VictimInfo->CopyFrom(*Victim->GetObjectInfo());
+
+			//AttackPkt.set_damage(Damage);
+		}
+
+		
+	}
+
+	SEND_PACKET(AttackPkt);
+	return;
+}

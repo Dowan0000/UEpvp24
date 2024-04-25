@@ -388,6 +388,8 @@ class ObjectInfo final :
     kPosInfoFieldNumber = 3,
     kObjectIdFieldNumber = 1,
     kObjectTypeFieldNumber = 2,
+    kHealthFieldNumber = 4,
+    kDamageFieldNumber = 5,
   };
   // .Protocol.PosInfo pos_info = 3;
   bool has_pos_info() const;
@@ -425,6 +427,24 @@ class ObjectInfo final :
   void _internal_set_object_type(::Protocol::ObjectType value);
   public:
 
+  // float health = 4;
+  void clear_health();
+  float health() const;
+  void set_health(float value);
+  private:
+  float _internal_health() const;
+  void _internal_set_health(float value);
+  public:
+
+  // float damage = 5;
+  void clear_damage();
+  float damage() const;
+  void set_damage(float value);
+  private:
+  float _internal_damage() const;
+  void _internal_set_damage(float value);
+  public:
+
   // @@protoc_insertion_point(class_scope:Protocol.ObjectInfo)
  private:
   class _Internal;
@@ -436,6 +456,8 @@ class ObjectInfo final :
     ::Protocol::PosInfo* pos_info_;
     uint64_t object_id_;
     int object_type_;
+    float health_;
+    float damage_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
   union { Impl_ _impl_; };
@@ -704,6 +726,46 @@ inline void ObjectInfo::set_allocated_pos_info(::Protocol::PosInfo* pos_info) {
   }
   _impl_.pos_info_ = pos_info;
   // @@protoc_insertion_point(field_set_allocated:Protocol.ObjectInfo.pos_info)
+}
+
+// float health = 4;
+inline void ObjectInfo::clear_health() {
+  _impl_.health_ = 0;
+}
+inline float ObjectInfo::_internal_health() const {
+  return _impl_.health_;
+}
+inline float ObjectInfo::health() const {
+  // @@protoc_insertion_point(field_get:Protocol.ObjectInfo.health)
+  return _internal_health();
+}
+inline void ObjectInfo::_internal_set_health(float value) {
+  
+  _impl_.health_ = value;
+}
+inline void ObjectInfo::set_health(float value) {
+  _internal_set_health(value);
+  // @@protoc_insertion_point(field_set:Protocol.ObjectInfo.health)
+}
+
+// float damage = 5;
+inline void ObjectInfo::clear_damage() {
+  _impl_.damage_ = 0;
+}
+inline float ObjectInfo::_internal_damage() const {
+  return _impl_.damage_;
+}
+inline float ObjectInfo::damage() const {
+  // @@protoc_insertion_point(field_get:Protocol.ObjectInfo.damage)
+  return _internal_damage();
+}
+inline void ObjectInfo::_internal_set_damage(float value) {
+  
+  _impl_.damage_ = value;
+}
+inline void ObjectInfo::set_damage(float value) {
+  _internal_set_damage(value);
+  // @@protoc_insertion_point(field_set:Protocol.ObjectInfo.damage)
 }
 
 #ifdef __GNUC__

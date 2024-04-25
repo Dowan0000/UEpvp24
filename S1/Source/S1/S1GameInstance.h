@@ -38,6 +38,8 @@ public:
 
 	void HandleMove(const Protocol::S_MOVE& MovePkt);
 
+	void HandleAttack(const Protocol::S_ATTACK& AttackPkt);
+
 public:
 	// GameServer
 	class FSocket* Socket;

@@ -13,7 +13,8 @@
 #include "S1MyPlayer.h"
 
 AS1Player::AS1Player() : 
-	TooFar(false)
+	TooFar(false), MaxHealth(100.f), Health(100.f), Damage(10.f)
+
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -39,6 +40,7 @@ AS1Player::AS1Player() :
 
 	PlayerInfo = new Protocol::PosInfo();
 	DestInfo = new Protocol::PosInfo();
+	ObjectInfo = new Protocol::ObjectInfo();
 }
 
 AS1Player::~AS1Player()
@@ -138,6 +140,19 @@ void AS1Player::SetMoveState(Protocol::MoveState State)
 	// TODO
 }
 
+void AS1Player::SetObjectInfo(const Protocol::ObjectInfo& info)
+{
+	if (ObjectInfo->object_id() != 0)
+	{
+		assert(ObjectInfo->object_id() == Info.object_id());
+	}
+
+	ObjectInfo->CopyFrom(info);
+
+	SetHealth(info.health());
+	SetDamage(info.damage());
+}
+
 void AS1Player::SetPlayerInfo(const Protocol::PosInfo& Info)
 {
 	if (PlayerInfo->object_id() != 0)
@@ -165,3 +180,18 @@ void AS1Player::SetDestInfo(const Protocol::PosInfo& Info)
 	SetMoveState(Info.state());
 }
 
+void AS1Player::AttackAnim_Implementation()
+{
+}
+
+void AS1Player::SetHealth(float NewHealth)
+{
+	ObjectInfo->set_health(NewHealth);
+	Health = NewHealth;
+}
+
+void AS1Player::SetDamage(float NewDamage)
+{
+	ObjectInfo->set_damage(NewDamage);
+	Damage = NewDamage;
+}

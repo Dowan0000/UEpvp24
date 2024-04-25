@@ -102,6 +102,7 @@ void US1GameInstance::HandleSpawn(const Protocol::ObjectInfo& ObjectInfo, bool I
 		if (Player == nullptr)
 			return;
 
+		Player->SetObjectInfo(ObjectInfo);
 		Player->SetPlayerInfo(ObjectInfo.pos_info());
 		MyPlayer = Player;
 		Players.Add(ObjectInfo.object_id(), Player);
@@ -109,6 +110,7 @@ void US1GameInstance::HandleSpawn(const Protocol::ObjectInfo& ObjectInfo, bool I
 	else
 	{
 		AS1Player* Player = Cast<AS1Player>(World->SpawnActor(OtherPlayerClass, &SpawnLocation));
+		Player->SetObjectInfo(ObjectInfo);
 		Player->SetPlayerInfo(ObjectInfo.pos_info());
 		Players.Add(ObjectInfo.object_id(), Player);
 	}
@@ -172,5 +174,39 @@ void US1GameInstance::HandleMove(const Protocol::S_MOVE& MovePkt)
 	const Protocol::PosInfo& Info = MovePkt.info();
 	//Player->SetPlayerInfo(Info);
 	Player->SetDestInfo(Info);
+}
+
+void US1GameInstance::HandleAttack(const Protocol::S_ATTACK& AttackPkt)
+{
+	if (Socket == nullptr || GameServerSession == nullptr)
+		return;
+
+	auto* World = GetWorld();
+	if (World == nullptr)
+		return;
+
+	const uint64 AttackerId = AttackPkt.attacker().object_id();
+	AS1Player** FindAttacker = Players.Find(AttackerId);
+	AS1Player* Attacker = *FindAttacker;
+	if (!Attacker->IsMyPlayer())
+	{
+		Attacker->AttackAnim();
+	}
+
+	bool hit = AttackPkt.hit();
+
+	if (hit)
+	{
+		const uint64 VictimId = AttackPkt.victim().object_id();
+		AS1Player** FindVictim = Players.Find(VictimId);
+		AS1Player* Victim = *FindVictim;
+		
+		Victim->SetHealth(AttackPkt.victim().health());
+		
+
+		// 피해 처리
+
+	}
+	
 }
 

@@ -9,7 +9,7 @@ RoomRef GRoom = make_shared<Room>();
 
 Room::Room()
 {
-
+	//////
 }
 
 Room::~Room()
@@ -28,6 +28,9 @@ bool Room::EnterRoom(ObjectRef object, bool randPos /*= true*/)
 		object->posInfo->set_y(Utils::GetRandom(0.f, 500.f));
 		object->posInfo->set_z(100.f);
 		object->posInfo->set_yaw(Utils::GetRandom(0.f, 100.f));
+
+		object->objectInfo->set_health(100.f);
+		object->objectInfo->set_damage(10.f);
 	}
 
 	// 입장 사실을 신입 플레이어에게 알린다
@@ -142,6 +145,59 @@ void Room::HandleMove(Protocol::C_MOVE pkt)
 		SendBufferRef sendBuffer = ServerPacketHandler::MakeSendBuffer(movePkt);
 		Broadcast(sendBuffer);
 	}
+}
+
+void Room::HandleAttack(Protocol::C_ATTACK pkt)
+{
+	const uint64 attackerId = pkt.attacker().object_id();
+	if (_objects.find(attackerId) == _objects.end())
+		return;
+
+	float restHp = 0;
+	{
+		Protocol::S_ATTACK attackPkt;
+		
+		Protocol::ObjectInfo* attacker = attackPkt.mutable_attacker();
+		attacker->CopyFrom(pkt.attacker()); // id 만 보내도 될것같은데...
+
+		attackPkt.set_hit(pkt.hit());
+
+		if (pkt.hit())
+		{
+			Protocol::ObjectInfo* victim = attackPkt.mutable_victim();
+			victim->CopyFrom(pkt.victim());
+
+			restHp = victim->health() - attacker->damage();
+
+			cout << "victim->health() : " << victim->health() << "\n";
+			cout << "attacker->damage() : " << attacker->damage() << "\n";
+			cout << "restHp : " << restHp << "\n";
+
+			if (restHp <= 0)
+			{
+				// 
+			}
+
+			victim->set_health(restHp);
+
+			//cout << "victim->health() : " << victim->health() << endl;
+
+			// hp 적용
+			
+			PlayerRef victimPlayer = dynamic_pointer_cast<Player>(_objects[victim->object_id()]);
+			victimPlayer->objectInfo->set_health(restHp);
+			
+		}
+
+		
+		SendBufferRef sendBuffer = ServerPacketHandler::MakeSendBuffer(attackPkt);
+		Broadcast(sendBuffer);
+	}
+
+	cout << "attacker ID : " << pkt.attacker().object_id() << endl;
+	cout << "attacker damage : " << pkt.attacker().damage() << endl;
+	cout << "victim ID : " << pkt.victim().object_id() << endl;
+	cout << "victim restHp : " << restHp << endl;
 }
 
 void Room::UpdateTick()
