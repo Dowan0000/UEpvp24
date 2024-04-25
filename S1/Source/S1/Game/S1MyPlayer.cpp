@@ -139,6 +139,7 @@ void AS1MyPlayer::Move(const FInputActionValue& Value)
 		{
 			DesiredInput = MovementVector;
 
+			
 			DesiredMoveDirection = FVector::ZeroVector;
 			DesiredMoveDirection += ForwardDirection * MovementVector.Y;
 			DesiredMoveDirection += RightDirection * MovementVector.X;
@@ -146,6 +147,9 @@ void AS1MyPlayer::Move(const FInputActionValue& Value)
 
 			const FVector Location = GetActorLocation();
 			FRotator Rotator = UKismetMathLibrary::FindLookAtRotation(Location, Location + DesiredMoveDirection);
+			
+			
+			// FRotator Rotator = GetActorRotation();
 			DesiredYaw = Rotator.Yaw;
 		}
 	}

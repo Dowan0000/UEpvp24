@@ -106,13 +106,13 @@ void AS1Player::Tick(float DeltaSeconds)
 
 				SetActorLocation(NextLocation);
 				
-				//UE_LOG(LogTemp, Warning, TEXT("TooFar"));
+				UE_LOG(LogTemp, Warning, TEXT("TooFar"));
 			}
 			if ((Location - DestLocation).Length() <= 10.f)
 			{
 				TooFar = false;
 				
-				//UE_LOG(LogTemp, Warning, TEXT("Dist under 10.f"));
+				UE_LOG(LogTemp, Warning, TEXT("Dist under 10.f"));
 			}
 
 		}
